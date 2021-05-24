@@ -1,0 +1,58 @@
+---
+title: "EXCEL_example"
+author: "Yagi_Masato"
+date: "2020/3/10"
+output: html_document
+---
+
+```{r fun_select_XLS}
+# #actionオプション;"save:保存場所の指定(初期値)", "read:読み込むエクセルファイルのパスを取得"
+# SelectXLS <- function(action = "save"){
+# #ライブラリの読み込み
+# library("tcltk")
+# switch(action, save = {
+# #エクセルファイルの保存場所を指定
+# setwd(paste(as.character(tkchooseDirectory(title = 'C:/Users/yagin/Documents'),sep = "", collapse ="")))},
+# read = {
+# #読み込むエクセルファイルのパスをGetXLSXPathに格納
+# assign("GetXLSXPath", paste0(as.character(tkgetOpenFile(title = 'C:/Users/yagin/Desktop/TEST.xlsx',filetypes = '{"エクセルファイル" {".xlsx" ".xls"}}',initialfile = c("*.xlsx", "*.xls")))),env = .GlobalEnv)})
+#   }
+#  
+# # #使用例
+# # #エクセルファイルの保存先指定
+# # SelectXLS("save")
+# # #エクセルファイルの保存:saveWorkbookコマンド
+# # saveWorkbook(XLData)
+# # #作業フォルダの確認
+# # #getwd()
+# #  
+# # #読み込むエクセルファイルのパスをGetXLSXPathに格納
+# # #キャンセルでGetXLSXPathは空になります
+# # SelectXLS("read")
+# # #エクセルファイルの読み込み:readWorksheetFromFileコマンド
+# # ReadData <- readWorksheetFromFile(GetXLSXPath, sheet = 1)
+# # #ファイルパスの表示
+# # #GetXLSXPath
+# 
+# 
+# 
+# library("XLConnect")
+# setwd("C:/Users/yagin/Desktop")
+# 
+# TestData <- data.frame(Group = I(paste0("TESTてすと", 1:10)),Data = 1:10)
+# 
+# SelectXLS("save")
+# 
+# #データの読み込み
+# XLData <- loadWorkbook('TEST.xlsx')
+# #シート作成
+# createSheet(XLData,name="test")
+# #作成したシートにデータを書き込む:writeWorksheetコマンド
+# #writeWorksheet(エクセルオブジェクト, data = 書き込むデータ,
+# #               sheet=データを書き込むシート名 or シート番号,
+# #               startRow = データ書き込み開始列:初期値は1,
+# #               startCol = データ書き込み開始行:初期値は1,
+# #               header=データ列名を書き込むかの指定:TRUE or FALSE)
+# writeWorksheet(XLData, data = TestData, sheet = 1,
+#                startRow = 1, startCol = 1, header = TRUE)
+```

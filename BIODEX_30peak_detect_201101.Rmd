@@ -1,0 +1,133 @@
+---
+title: "BIODEX_data_sampling"
+author: "Yagi_Masato"
+date: "2020/1/15"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load}
+library(xlsx)
+library(dplyr)
+library(rlist)
+fun_load <- function(files_name){
+  all_data <- read.table(files_name, skip=5, header=T)
+  torque <<- all_data$N.M
+  x <- rep(0, times=40)
+  torque <<- append(torque,x)
+  torque <<- append(torque,x,after = 0) 
+  # torque <<- append(torque,x,after = 0)
+  # fun_detect(torque)
+}
+```
+
+```{r detect}
+fun_detect <- function(torque){
+  # 波形データのトップを探す
+  num <- length(torque)
+  i <- 41
+  while (i < num) {
+    # 前後40個の値より大きいだとピーク値が引っかからない
+    biggest_previos <- all(torque[(i-1):(i-40)] <= torque[i])
+    biggest_post <- all(torque[(i+1):(i+40)] <= torque[i])
+    if (torque[i] > 30 && biggest_previos && biggest_post){
+      peak_torque <<- append(peak_torque, torque[i])
+      i <- i + 100
+    } else {
+        i <- i + 1
+    }
+  }
+}
+
+```
+
+``` {r print info}
+fun_info <- function(){
+  print(file_name)
+  print(torque_length)
+  print(peak_torque)
+}
+```
+
+```{r first and last}
+#出力するデータフレーム
+# output_data <- c()
+# df <- data.frame(matrix(rep(1,11),nrow = 1))#[character(0),] # 空のデータフレーム作成
+# data.frame( matrix( vector(), length(files), , dimnames = list( c(), colnames ) ) )
+# df <- data.frame(FILE=character(),
+#                  "1"=character(),
+#                  "2"=character(),
+#                  "3"=character(),
+#                  "4"=character(),
+#                  "5"=character(),
+#                  "6"=character(),
+#                  "7"=character(),
+#                  "8"=character(),
+#                  "9"=character(),
+#                  "10"=character(),
+#                  "11"=character(),
+#                  "12"=character(),
+#                  "13"=character(),
+#                  "3"=character(),
+#                  "4"=character(),
+#                  "5"=character(),
+#                  "6"=character(),
+#                  "7"=character(),
+#                  "8"=character(),
+#                  "9"=character(),
+#                  "10"=character(),
+#                  "11"=character(),
+#                  "25"=character(),
+#                  "26"=character(),
+#                  "27"=character(),
+#                  "28"=character(),
+#                  "29"=character(),
+#                  stringsAsFactors=FALSE)
+n <- 31
+df <- data.frame(matrix(rep(NA, n), nrow=1))[numeric(0), ]
+colnames(df) <- c("File", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30")
+
+fun_CreateDf <- function(file_name,peak_torque){
+  torque_length <- length(peak_torque)
+  if (torque_length == 30) {
+    # w <- list(file_name,peak_torque[1:5],peak_torque[26:30]) %>% list.ungroup() 型を保持したいもののunlistするとchrになってしまう
+    # dfにトルクのベクトルを追加
+    df[(nrow(df) + 1),] <<- c(file_name,peak_torque[1:30])
+    print("↓波形データを検出しました！！")
+  } else if (torque_length == 31 && peak_torque[30] / 2 > peak_torque[31]){
+    df[(nrow(df) + 1),] <<- c(file_name,peak_torque[1:30])
+    print("↓一回多く検出されました")
+  } else if (torque_length == 29){
+    print("↓波形データが１つとんでいます！！")
+    df[(nrow(df) + 1),] <<- c(file_name,peak_torque[1:29],"#")
+  } else {
+    print("##################↓正しく波形データが検出できませんでした！！################")
+    df[(nrow(df) + 1),] <<- c(file_name,numeric(30))
+  }
+  print(file_name)
+  print(torque_length)
+  print(peak_torque)
+  peak_torque <<- c()
+}
+  
+```
+
+```{r ref}
+setwd("C:/Users/yagin/Desktop/BIODEX")
+#上記のディレクトリ内の全てのCSVファイルを列挙
+#list all csv files in above directory
+files <- list.files(pattern = "\\.txt$")
+peak_torque <- c()
+for (f in 1:length(files)){ #fileの数だけ実行
+  print(files[f]) #ファイル名を出力
+  fun_load(files[f]) #各ファイルからトルクを取り出す
+  fun_detect(torque) #波形データの取り出し
+  #ファイル名とピーク値を出力
+  fun_CreateDf(files[f],peak_torque)
+}
+write.xlsx(df, "C:/Users/yagin/Desktop/output.xlsx", sheetName="Sheet1",col.names=T,row.names=F)
+
+```

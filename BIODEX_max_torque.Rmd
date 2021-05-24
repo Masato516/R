@@ -1,0 +1,51 @@
+---
+title: "BIODEX_max"
+author: "Yagi_Masato"
+date: "2020/10/31"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load}
+library(xlsx)
+library(dplyr)
+library(rlist)
+# トルク列のデータを取得
+fun_load <- function(files_name){
+  all_data <- read.table(files_name, skip=5, header=T)
+  torque <<- all_data$N.M 
+}
+```
+
+```{r data-frame}
+# データフレーム作成
+n <- 2
+df <- data.frame(matrix(rep(NA, n), nrow=1))[numeric(0), ]
+# カラム名
+colnames(df) <- c("File", "MAX")
+```
+
+```{r detect_max}
+fun_detect <- function(torques){
+  max_torque <- max(torques)
+  print(max_torque)
+}
+```
+
+```{r ref}
+setwd("C:/Users/yagin/Desktop/BIODEX")
+#上記のディレクトリ内の全てのCSVファイルを列挙
+#list all csv files in above directory
+files <- list.files(pattern = "\\.txt$")
+
+for (f in 1:length(files)){ #fileの数だけ実行
+  max_torque <- 0
+  print(files[f]) #ファイル名を出力
+  fun_load(files[f]) #各ファイルからトルクを取り出す
+  fun_detect(torque) #波形データの取り出し
+}
+write.xlsx(df, "C:/Users/yagin/Desktop/output_max.xlsx", sheetName="Sheet1", col.names=T, row.names=F)
+```

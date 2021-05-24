@@ -1,0 +1,28 @@
+---
+title: "Practice"
+author: "Yagi_Masato"
+date: "2020/3/10"
+output: html_document
+---
+
+```{r 複数のデータを結合する方法}
+id<-
+  c(1:5)
+x1<-
+  c(7,10,8,6,9)
+df1<-
+  data.frame(id,x1)
+df1
+
+id<-
+  c(5:7)
+x1<-
+  c(9,2,3)
+# idが重複している場合は一つになるようにしてくれる
+df2<-
+  data.frame(id,x1)
+df2
+df<-
+  merge(df1, df2, by.x1="id", all=T)
+df
+```
